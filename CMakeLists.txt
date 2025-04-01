@@ -208,7 +208,11 @@ ExternalProject_Add(
     INSTALL_COMMAND cp ${CMAKE_BINARY_DIR}/external/src/qpoases/bin/libqpOASES.so ${CMAKE_INSTALL_PREFIX}/lib/libqpOASES.so
 )
 
-set(qpoases_lib "-L${CMAKE_BINARY_DIR}/lib -lqpOASES")
+add_library(qpoases_lib SHARED IMPORTED)
+set_target_properties(qpoases_lib PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}qpOASES${CMAKE_SHARED_LIBRARY_SUFFIX}
+  IMPORTED_NO_SONAME TRUE
+)
 set(qpoases_include "${CMAKE_BINARY_DIR}/external/src/qpoases/include")
 
 # 2) OSQP
@@ -223,7 +227,10 @@ ExternalProject_Add(
     INSTALL_COMMAND cp ${CMAKE_BINARY_DIR}/external/src/osqp-build/out/libosqp.so ${CMAKE_INSTALL_PREFIX}/lib/libosqp.so
 )
 
-set(osqp_lib "-L${CMAKE_BINARY_DIR}/lib -losqp")
+add_library(osqp_lib SHARED IMPORTED)
+set_target_properties(osqp_lib PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/lib/${CMAKE_FIND_LIBRARY_PREFIXES}osqp${CMAKE_SHARED_LIBRARY_SUFFIX}
+)
 set(osqp_include "${CMAKE_BINARY_DIR}/external/src/osqp/include")
 
 # 3) googletest
@@ -264,26 +271,12 @@ set_target_properties(
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-# Add the external projects as depenedncies for our project
-add_dependencies(
-    ${PROJECT_NAME}-static
-    qpoases
-    osqp
-)
-
 if (${QPOASES_SCHUR})
     target_link_libraries(
         ${PROJECT_NAME}-static
         PRIVATE ${Matlab_LIBRARIES}
     )
 endif()
-
-
-# Add include directories of dependencies: qpOASES, OSQP
-include_directories(${PROJECT_NAME}
-    SYSTEM ${qpoases_include}
-    SYSTEM ${osqp_include}
-)
 
 # create shared lib
 add_library(${PROJECT_NAME}-shared SHARED ${SRC_FILES})
@@ -295,16 +288,17 @@ set_target_properties(
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )
 
-# Add the external projects as depenedncies for our project
-add_dependencies(
-    ${PROJECT_NAME}-shared
-    qpoases
-    osqp
+target_include_directories(${PROJECT_NAME}-shared SYSTEM
+    PUBLIC ${qpoases_include}
+    PUBLIC ${osqp_include}
+)
+target_link_libraries(${PROJECT_NAME}-shared
+    PUBLIC qpoases_lib
+    PUBLIC osqp_lib
 )
 
 if (${QPOASES_SCHUR})
-    target_link_libraries(
-        ${PROJECT_NAME}-shared
+    target_link_libraries(${PROJECT_NAME}-shared
         PRIVATE ${Matlab_LIBRARIES}
     )
 
@@ -338,7 +332,8 @@ if (${BUILD_EXAMPLES})
         target_link_libraries(
             ${EXAMPLE_NAME}
             PUBLIC ${PROJECT_NAME}-shared
-            PRIVATE ${qpoases_lib} ${osqp_lib}
+            #PUBLIC ${PROJECT_NAME}-static
+            #PRIVATE qpoases_lib osqp_lib
         )
 
         if (${QPOASES_SCHUR})
@@ -495,13 +490,6 @@ if (${UNIT_TESTS})
     # Add Unit testing source file
     add_executable(RunUnitTests test/RunUnitTests.cpp)
 
-    add_dependencies(
-        RunUnitTests
-        qpoases
-        osqp
-        gtest
-    )
-
     set_target_properties(
         RunUnitTests
         PROPERTIES
@@ -512,7 +500,7 @@ if (${UNIT_TESTS})
     target_link_libraries(
         RunUnitTests
         PUBLIC ${PROJECT_NAME}-shared
-        PRIVATE ${qpoases_lib} ${osqp_lib} ${gtest_lib} ${LIB_SOLVER}
+        PRIVATE ${gtest_lib} ${LIB_SOLVER}
         PRIVATE -lpthread
     )
 
@@ -533,7 +521,6 @@ if (${UNIT_TESTS})
         target_link_libraries(
             ${EXAMPLE_TEST_NAME}
             PUBLIC ${PROJECT_NAME}-shared
-            PRIVATE ${qpoases_lib} ${osqp_lib}
         )
 
         if (${QPOASES_SCHUR})
