@@ -723,8 +723,8 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::setComplementarityBounds(const double* const lbL_new, const double* const ubL_new, const double* const lbR_new, const double* const ubR_new) {
-
+	ReturnValue LCQProblem::setComplementarityBounds(const double* const lbL_new, const double* const ubL_new, const double* const lbR_new, const double* const ubR_new)
+  {
 		if (Utilities::isNotNullPtr(lbL_new )) {
 			lbL = new double[nComp];
 		}
@@ -1148,17 +1148,20 @@ namespace LCQPow {
 	}
 
 
-	bool LCQProblem::stationarityCheck( ) {
+	bool LCQProblem::stationarityCheck( )
+  {
 		return Utilities::MaxAbs(statk, nV) < options.getStationarityTolerance();
 	}
 
 
-	bool LCQProblem::complementarityCheck( ) {
+	bool LCQProblem::complementarityCheck( )
+  {
 		return getPhi() < options.getComplementarityTolerance();
 	}
 
 
-	double LCQProblem::getObj( ) {
+	double LCQProblem::getObj( )
+  {
 		double lin = Utilities::DotProduct(g, xk, nV);
 
 		if (sparseSolver) {
@@ -1169,7 +1172,8 @@ namespace LCQPow {
 	}
 
 
-	double LCQProblem::getPhi( ) {
+	double LCQProblem::getPhi( )
+  {
 		double phi_lin = 0;
 
 		// Linear term
@@ -1185,7 +1189,8 @@ namespace LCQPow {
 	}
 
 
-	double LCQProblem::getMerit( ) {
+	double LCQProblem::getMerit( )
+  {
 		double lin = Utilities::DotProduct(g, xk, nV);
 
 		if (sparseSolver) {
@@ -1196,7 +1201,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updatePenalty( ) {
+	void LCQProblem::updatePenalty( )
+  {
 		// Clear Leyffer history
 		if (options.getNDynamicPenalty() > 0)
 			complHistory.clear();
@@ -1213,8 +1219,8 @@ namespace LCQPow {
 		}
 	}
 
-
-	void LCQProblem::getOptimalStepLength( ) {
+	void LCQProblem::getOptimalStepLength( )
+  {
 
 		double qk;
 
@@ -1237,13 +1243,15 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateStep( ) {
+	void LCQProblem::updateStep( )
+  {
 		// xk = xk + alphak*pk
 		Utilities::WeightedVectorAdd(1, xk, alphak, pk, xk, nV);
 	}
 
 
-	void LCQProblem::updateStationarity( ) {
+	void LCQProblem::updateStationarity( )
+  {
 		// stat = Qk*xk + g - A'*yk_A - yk_x
 		// 1) Objective contribution: Qk*xk + g
 		if (sparseSolver) {
@@ -1272,7 +1280,8 @@ namespace LCQPow {
 	}
 
 
-	bool LCQProblem::leyfferCheckPositive( ) {
+	bool LCQProblem::leyfferCheckPositive( )
+  {
 
 		size_t n = (size_t)options.getNDynamicPenalty();
 
@@ -1313,7 +1322,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateQk( ) {
+	void LCQProblem::updateQk( )
+  {
 		// Smart update in sparse case
 		if (sparseSolver) {
 			double factor = rho*(1 - 1.0/options.getPenaltyUpdateFactor());
@@ -1326,19 +1336,22 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateOuterIter( ) {
+	void LCQProblem::updateOuterIter( )
+  {
 		outerIter++;
 		stats.updateIterOuter(1);
 	}
 
 
-	void LCQProblem::updateTotalIter( ) {
+	void LCQProblem::updateTotalIter( )
+  {
 		totalIter++;
 		stats.updateIterTotal(1);
 	}
 
 
-	void LCQProblem::perturbGradient( ) {
+	void LCQProblem::perturbGradient( )
+  {
 
 		int randNum;
 		for (int i = 0; i < nV; i++) {
@@ -1350,7 +1363,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::perturbStep( ) {
+	void LCQProblem::perturbStep( )
+  {
 
 		int randNum;
 		for (int i = 0; i < nV; i++) {
@@ -1362,7 +1376,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::storeSteps( ) {
+	void LCQProblem::storeSteps( )
+  {
 		stats.updateTrackingVectors(
 			xk,
 			innerIter,
@@ -1378,7 +1393,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::transformDuals( ) {
+	void LCQProblem::transformDuals( )
+  {
 
 		double* tmp = new double[nComp];
 
@@ -1409,7 +1425,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::determineStationarityType( ) {
+	void LCQProblem::determineStationarityType( )
+  {
 
 		std::vector<int> weakComp = getWeakComplementarities( );
 
