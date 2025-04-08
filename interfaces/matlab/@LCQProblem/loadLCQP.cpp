@@ -37,18 +37,26 @@ class MexFunction : public matlab::mex::Function {
     checkArguments(outputs, inputs);
 
     // Assume the inputs are integral, this is generally not true but, shrug, it is fine.
-    int nV = (int) inputs[1][0];
-    int nC = (int) inputs[2][0];
-    int nComp = (int) inputs[3][0];
+    matlab::data::TypedArray<std::uintptr_t> self_array(std::move(matlab->getProperty(inputs[0], u"self")));
+
+    if (self_array.isEmpty())
+    {
+      return;
+    }
+
+    std::uintptr_t self_ptr = reinterpret_cast<std::uintptr_t>((std::uintptr_t) (self_array[0]));
 
     // Use raw pointer because we will have to handle this as an implicit unique pointer stored in matlab.
-    LCQPow::LCQProblem* problem = new LCQPow::LCQProblem(nV,nC,nComp);
+    LCQPow::LCQProblem* problem = reinterpret_cast<LCQPow::LCQProblem*>(self_ptr);
 
-    // Reinterpret the pointer to an unsigned integer
-    std::uintptr_t self = reinterpret_cast<std::uintptr_t>(problem);
+    
+    // Parse inputs
 
-    // Set the self property the current object
-    matlab->setProperty(inputs[0], u"self", factory.createScalar(self));
+    // Parse options
+
+    // call create problem
+
+    // call set options
   }
 
   void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
@@ -60,26 +68,11 @@ class MexFunction : public matlab::mex::Function {
                     std::vector<matlab::data::Array>({ factory.createScalar("no outputs returned") }));
 
     }
-    if(inputs.size() != 4)
+    if(inputs.size() < 8 || inputs.size() > 14)
     {
       matlab->feval(u"error", 0,
                     std::vector<matlab::data::Array>({ factory.createScalar("Incorrect number of inputs") }));
 
-    }
-    if (inputs[1].getType() != matlab::data::ArrayType::DOUBLE || inputs[1].getNumberOfElements() != 1)
-    {
-      matlab->feval(u"error", 0,
-                       std::vector<matlab::data::Array>({ factory.createScalar("nV must be a scalar double") }));
-    }
-    if (inputs[2].getType() != matlab::data::ArrayType::DOUBLE || inputs[2].getNumberOfElements() != 1)
-    {
-      matlab->feval(u"error", 0,
-                       std::vector<matlab::data::Array>({ factory.createScalar("nC must be a scalar double") }));
-    }
-    if (inputs[3].getType() != matlab::data::ArrayType::DOUBLE || inputs[3].getNumberOfElements() != 1)
-    {
-      matlab->feval(u"error", 0,
-                       std::vector<matlab::data::Array>({ factory.createScalar("nComp must be a scalar double") }));
     }
   }
 };

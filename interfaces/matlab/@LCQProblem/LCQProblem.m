@@ -1,5 +1,5 @@
 classdef LCQProblem < handle
-    properties(Access=private)
+    properties%(Access=private)
         self % ptr to C++ LCQProblem object. On a 64 bit x86
     end
 
