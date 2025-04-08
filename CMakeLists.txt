@@ -439,7 +439,50 @@ if (${BUILD_MATLAB_INTERFACE})
             COPY ${MATLAB_INTERFACE_DIR}/${MATLAB_INTERFACE_NAME}.m
             DESTINATION ${MATLAB_INTERFACE_DESTINATION}
         )
-    
+
+        # HERE STARTS A HACK
+        # Copy over new interface .m file
+        file(
+            COPY ${MATLAB_INTERFACE_DIR}/@LCQProblem/LCQProblem.m
+            DESTINATION ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem
+        )
+        # Include new matlab interface stuff, for now only constructProblem
+        matlab_add_mex(
+          NAME constructProblem
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/constructProblem.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/constructProblem
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          constructProblem
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          constructProblem
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+        )
+
+        target_include_directories(
+          constructProblem
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
     endif()
 
 endif()
