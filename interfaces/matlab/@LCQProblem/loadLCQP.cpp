@@ -36,21 +36,37 @@ class MexFunction : public matlab::mex::Function {
     // Check inputs are valid
     checkArguments(outputs, inputs);
 
-    // Assume the inputs are integral, this is generally not true but, shrug, it is fine.
+    // Get the uintptr_t array from self member property
     matlab::data::TypedArray<std::uintptr_t> self_array(std::move(matlab->getProperty(inputs[0], u"self")));
 
-    if (self_array.isEmpty())
+    // Check if we have no value, which _should_ never happen but fail out anyway.
+    if(self_array.isEmpty())
     {
+      // TODO(@anton) probably need to throw an exception here.
       return;
     }
 
     std::uintptr_t self_ptr = reinterpret_cast<std::uintptr_t>((std::uintptr_t) (self_array[0]));
 
-    // Use raw pointer because we will have to handle this as an implicit unique pointer stored in matlab.
     LCQPow::LCQProblem* problem = reinterpret_cast<LCQPow::LCQProblem*>(self_ptr);
+    // Check if self ptr is null and fail out immediately.
+    if(problem == nullptr)
+    {
+      // TODO(@anton) probably need to throw an exception here.
+      return;
+    }
 
-    
-    // Parse inputs
+    // TODO(@anton) support also sparse
+    boolean dense = true;
+    // Build problem:
+    if dense
+    {
+      buildDense(problem, outputs, inputs);
+    }
+    else
+    {
+      buildSparse(problem, outputs, inputs);
+    }
 
     // Parse options
 
@@ -75,4 +91,31 @@ class MexFunction : public matlab::mex::Function {
 
     }
   }
+
+  void buildDense(LCQPow::LCQProblem* problem, matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs)
+  {
+    // PARSE INPUTS
+    // Get Q. Q is assumed symmetric PSD so we don't care that matlab uses column major order.
+    matlab::data::TypedArray<double> Q_arr(std::move(inputs[1]));
+    double* Q = Q_arr.release().release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
+
+    matlab::data::TypedArray<double> L_arr(std::move(inputs[2]));
+    double* L = L_arr.release().release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
+
+    matlab::data::TypedArray<double> R_arr(std::move(inputs[3]));
+    double* R = R_arr.release().release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
+
+    matlab::data::TypedArray<double> A_arr(std::move(inputs[8]));
+    double* A = A_arr.release().release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
+
+
+  }
+
+  void buildSparse(LCQPow::LCQProblem* problem, matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs)
+  {
+    // PARSE INPUTS
+    // Get Q:
+
+  }
+
 };
