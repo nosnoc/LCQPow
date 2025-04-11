@@ -1529,6 +1529,20 @@ namespace LCQPow {
 		return nDuals;
 	}
 
+int LCQProblem::getNV() const
+{
+  return nV;
+}
+
+int LCQProblem::getNC() const
+{
+  return nC;
+}
+int LCQProblem::getNComp() const
+{
+  return nComp;
+}
+
 
 	void LCQProblem::getOutputStatistics(OutputStatistics& _stats) const
 	{

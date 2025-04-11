@@ -11,7 +11,7 @@ classdef LCQProblem < handle
 
 
         %
-        loadLCQP(obj, args);
+        loadLCQP(obj, Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, opts);
 
         %
         runSolver();

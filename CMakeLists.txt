@@ -521,6 +521,44 @@ if (${BUILD_MATLAB_INTERFACE})
           SYSTEM ${qpoases_include}
         )
 
+        	# destructProblem
+	matlab_add_mex(
+          NAME loadLCQP
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/loadLCQP.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/loadLCQP
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          loadLCQP
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          loadLCQP
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+          PUBLIC -g
+        )
+
+        target_include_directories(
+          loadLCQP
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
     endif()
 
 endif()
