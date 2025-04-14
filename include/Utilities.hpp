@@ -206,6 +206,7 @@ namespace LCQPow {
 
             /** Clear sparse matrix **/
             static void ClearSparseMat(csc* M);
+      static void ClearSparseMatCPP(csc* M);
 
 
             /** Clear sparse matrix **/

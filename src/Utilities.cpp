@@ -267,28 +267,58 @@ namespace LCQPow {
 
     void Utilities::ClearSparseMat(csc* M)
     {
+      std::cout << "Clearing sparse mat" << std::endl;
         if (isNotNullPtr(M)) {
+          std::cout << "clearing M->p: " << M->p << std::endl;
             if (isNotNullPtr(M->p)) {
                 free(M->p);
                 M->p = NULL;
             }
+          std::cout << "clearing M->i: " << M->i << std::endl;
             if (isNotNullPtr(M->i)) {
                 free(M->i);
                 M->i = NULL;
             }
+            std::cout << "clearing M->x: " << M->x  << std::endl;
             if (isNotNullPtr(M->x)) {
                 free(M->x);
                 M->x = NULL;
             }
 
-            free (M);
+            free(M);
 			M = NULL;
 		}
     }
 
+void Utilities::ClearSparseMatCPP(csc* M)
+{
+  if (M != nullptr) {
+    std::cout << "clearing M->p: " << M->p << std::endl;
+    if (M->p != nullptr) {
+      delete M->p;
+      M->p = nullptr;
+    }
+    std::cout << "clearing M->i: " << M->i  << std::endl;
+    if (M->i != nullptr) {
+      delete M->i;
+      M->i = nullptr;
+    }
+    std::cout << "clearing M->x: " << M->x  << std::endl;
+    if (M->x != nullptr) {
+      delete M->x;
+      M->x = nullptr;
+    }
+
+    std::cout << "clearing M" << std::endl;
+    delete M;
+    M = nullptr;
+  }
+}
+
 
     void Utilities::ClearSparseMat(csc** M)
     {
+      std::cout << "Clearing sparse mat";
         if (isNotNullPtr(*M)) {
             if (isNotNullPtr((*M)->p)) {
                 free((*M)->p);
