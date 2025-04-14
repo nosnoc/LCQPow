@@ -26,6 +26,27 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+
+/*
+ * This is a macro which processes a matlab::data::Array into a double* pointer
+ */
+#define UNWRAP_ARRAY(name, idx, size) if(!checkDimensionAndTypeDouble(inputs[idx], size, 1, #name, true)) return; \
+  bool name##_present = !inputs[idx].isEmpty();                         \
+  matlab::data::TypedArray<double> name##_arr(std::move(inputs[idx]));  \
+  matlab::data::buffer_ptr_t<double> name##_arr_ptr = name##_arr.release(); \
+  auto del_##name = name##_arr_ptr.get_deleter();                       \
+  if(name##_present)                                                    \
+  {                                                                     \
+    name = name##_arr_ptr.release();                                    \
+    std::cout << "Getting " << #name << std::endl;                      \
+  }
+
+#define MAYBE_CLEANUP_VECTOR(name) if(name##_present) \
+  {                                                   \
+    del_##name(name);                                 \
+    std::cout << "Deleteing " << #name << std::endl;  \
+  }
+    
 using namespace matlab::data;
 using matlab::mex::ArgumentList;
 
@@ -123,7 +144,9 @@ class MexFunction : public matlab::mex::Function {
     // Get Q. Q is assumed symmetric PSD so we don't care that matlab uses column major order.
     if(!checkDimensionAndTypeDouble(inputs[1], nV, nV, "Q")) return;
     matlab::data::TypedArray<double> Q_arr(std::move(inputs[1]));
-    Q = Q_arr.release().release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
+    matlab::data::buffer_ptr_t<double> Q_arr_ptr = Q_arr.release();
+    auto del_Q = Q_arr_ptr.get_deleter();
+    Q = Q_arr_ptr.release(); // NOTE: WE ARE NOW RESPONSIBLE FOR FREEING THIS POINTER
 
     // Get L
     if(!checkDimensionAndTypeDouble(inputs[3], nComp, nV, "L")) return;
@@ -167,65 +190,55 @@ class MexFunction : public matlab::mex::Function {
     // Get vectors
     if(!checkDimensionAndTypeDouble(inputs[2], nV, 1, "g")) return;
     matlab::data::TypedArray<double> g_arr(std::move(inputs[2]));
-    g = g_arr.release().release();
+    matlab::data::buffer_ptr_t<double> g_arr_ptr = g_arr.release();
+    auto del_g = g_arr_ptr.get_deleter();
+    g = g_arr_ptr.release();
 
-    if(!checkDimensionAndTypeDouble(inputs[5], nComp, 1, "lbL", true)) return;
-    if(!inputs[5].isEmpty())
-    {
-      matlab::data::TypedArray<double> lbL_arr(std::move(inputs[5]));
-      lbL = lbL_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[6], nComp, 1, "ubL", true)) return;
-    if(!inputs[6].isEmpty())
-    {
-      matlab::data::TypedArray<double> ubL_arr(std::move(inputs[6]));
-      ubL = ubL_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[7], nComp, 1, "lbR", true)) return;
-    if(!inputs[7].isEmpty())
-    {
-      matlab::data::TypedArray<double> lbR_arr(std::move(inputs[7]));
-      lbR = lbR_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[8], nComp, 1, "ubR", true)) return;
-    if(!inputs[8].isEmpty())
-    {
-      matlab::data::TypedArray<double> ubR_arr(std::move(inputs[8]));
-      ubR = ubR_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[10], nC, 1, "lbA", true)) return;
-    if(!inputs[10].isEmpty())
-    {
-      matlab::data::TypedArray<double> lbA_arr(std::move(inputs[10]));
-      lbA = lbA_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[11], nC, 1, "ubA", true)) return;
-    if(!inputs[11].isEmpty())
-    {
-      matlab::data::TypedArray<double> ubA_arr(std::move(inputs[11]));
-      ubA = ubA_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[12], nV, 1, "lb", true)) return;
-    if(!inputs[12].isEmpty())
-    {
-      matlab::data::TypedArray<double> lb_arr(std::move(inputs[12]));
-      lb = lb_arr.release().release();
-    }
-
-    if(!checkDimensionAndTypeDouble(inputs[13], nV, 1, "ub", true)) return;
-    if(!inputs[13].isEmpty())
-    {
-      matlab::data::TypedArray<double> ub_arr(std::move(inputs[13]));
-      ub = ub_arr.release().release();
-    }
+    // Get all bounding (optional) vectors
+    UNWRAP_ARRAY(lbL,5,nComp);
+    UNWRAP_ARRAY(ubL,6,nComp);
+    UNWRAP_ARRAY(lbR,7,nComp);
+    UNWRAP_ARRAY(ubR,8,nComp);
+    UNWRAP_ARRAY(lbA,10,nC);
+    UNWRAP_ARRAY(ubA,11,nC);
+    UNWRAP_ARRAY(lb,12,nV);
+    UNWRAP_ARRAY(ub,13,nV);
 
     LCQPow::ReturnValue ret = problem->loadLCQP(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, x0, y0);
+
+    // Cleanup arrays
+    if(A != nullptr)
+    {
+      delete[] A;
+      std::cout << "Deleting A" << std::endl;
+    }
+    if(L != nullptr)
+    {
+      delete[] L;
+      std::cout << "Deleting L" << std::endl;
+    }
+    if(R != nullptr)
+    {
+      delete[] R;
+      std::cout << "Deleting R" << std::endl;
+    }
+    if(Q != nullptr)
+    {
+      del_Q(Q);
+      std::cout << "Deleting Q" << std::endl;
+    }
+    // Cleanup vectors
+    del_g(g);
+    std::cout << "Deleting g" << std::endl;
+    MAYBE_CLEANUP_VECTOR(lbL);
+    MAYBE_CLEANUP_VECTOR(ubL);
+    MAYBE_CLEANUP_VECTOR(lbR);
+    MAYBE_CLEANUP_VECTOR(ubR);
+    MAYBE_CLEANUP_VECTOR(lbA);
+    MAYBE_CLEANUP_VECTOR(ubA);
+    MAYBE_CLEANUP_VECTOR(lb);
+    MAYBE_CLEANUP_VECTOR(ub);
+    
   }
 
   void buildSparse(LCQPow::LCQProblem* problem, matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs, const double* const x0, const double* const y0)
