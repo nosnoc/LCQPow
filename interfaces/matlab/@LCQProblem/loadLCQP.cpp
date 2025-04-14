@@ -128,6 +128,7 @@ class MexFunction : public matlab::mex::Function {
     }
     // call set options
     // Set options and print them
+    std::cout << "AAAAAAAAAAAAAAAAhhhhhh" << std::endl;
     problem->setOptions(options);
   }
 
@@ -313,9 +314,9 @@ class MexFunction : public matlab::mex::Function {
     }
 
     // Get A
-    if(!checkDimensionAndTypeDouble(inputs[9], nC, nV, "A")) return 1;
+    if(nC>0 && !checkDimensionAndTypeDouble(inputs[9], nC, nV, "A")) return 1;
     matlab::data::TypedArray<double> A_arr(std::move(inputs[9]));
-    if(!A_arr.isEmpty())
+    if(nC>0 && !A_arr.isEmpty())
     {
       matlab::data::buffer_ptr_t<double> A_col_ptr = A_arr.release();
       auto del_A = A_col_ptr.get_deleter();
@@ -392,20 +393,20 @@ class MexFunction : public matlab::mex::Function {
       matlab->feval(u"error", 0, std::vector<matlab::data::Array>({factory.createScalar(msg.str())}));
       return LCQPow::ReturnValue::DENSE_SPARSE_MISSMATCH;
     }
-    //matlab::data::SparseArray<double> Q_arr(std::move(inputs[1]));
-    //matlab::data::SparseArray<double> L_arr(std::move(inputs[3]));
-    //matlab::data::SparseArray<double> R_arr(std::move(inputs[4]));
-    matlab::data::SparseArray<double> Q_arr(inputs[1]);
-    matlab::data::SparseArray<double> L_arr(inputs[3]);
-    matlab::data::SparseArray<double> R_arr(inputs[4]);
+    matlab::data::SparseArray<double> Q_arr(std::move(inputs[1]));
+    matlab::data::SparseArray<double> L_arr(std::move(inputs[3]));
+    matlab::data::SparseArray<double> R_arr(std::move(inputs[4]));
+    //matlab::data::SparseArray<double> Q_arr(inputs[1]);
+    //matlab::data::SparseArray<double> L_arr(inputs[3]);
+    //matlab::data::SparseArray<double> R_arr(inputs[4]);
     // Read sparse matrices
     csc* Q = readSparseMatrix(Q_arr, nV, nV);
     csc* L = readSparseMatrix(L_arr, nComp, nV);
     csc* R = readSparseMatrix(R_arr, nComp, nV);
     csc* A = nullptr;
     if (nC > 0) {
-      //matlab::data::SparseArray<double> A_arr(std::move(inputs[9]));
-      matlab::data::SparseArray<double> A_arr(inputs[9]);
+      matlab::data::SparseArray<double> A_arr(std::move(inputs[9]));
+      //matlab::data::SparseArray<double> A_arr(inputs[9]);
       A = readSparseMatrix(A_arr, nC, nV);
     }
 
@@ -437,7 +438,7 @@ class MexFunction : public matlab::mex::Function {
     UNWRAP_ARRAY(lb,12,nV);
     UNWRAP_ARRAY(ub,13,nV);
 
-    std::cout << Q << std::endl;
+    std::cout << "pre load Q: " << Q << std::endl;
     LCQPow::ReturnValue ret = problem->loadLCQP(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, x0, y0);
     std::cout << Q << std::endl;
     
@@ -469,7 +470,7 @@ class MexFunction : public matlab::mex::Function {
     return ret;
   }
   
-  csc* readSparseMatrix(matlab::data::SparseArray<double> mat, int nRow, int nCol)
+  csc* readSparseMatrix(matlab::data::SparseArray<double>& mat, int nRow, int nCol)
   {
     double* x = (double*) malloc(mat.getNumberOfNonZeroElements()*sizeof(double));
     int* i = (int*) malloc(mat.getNumberOfNonZeroElements()*sizeof(int));
@@ -483,7 +484,9 @@ class MexFunction : public matlab::mex::Function {
     auto mat_it_end = mat.end();
     double* x_it = x;
     int* p_it = p;
-    int curr_col = -1;
+    int curr_col = 0;
+    p[0] = 0;
+    int nc = 0;
     int idx = 0;
     // Iterate over all nonzeros;
     while(mat_it != mat_it_end)
@@ -494,19 +497,24 @@ class MexFunction : public matlab::mex::Function {
       int col = mat_idx.second;
       // If we have moved on to the next column: populate pointers in p
       if(col > curr_col)
-      {
-        for(int ii = curr_col+1; ii <= col; ii++)
+      {        
+        for(int ii = curr_col+1; ii < col; ii++)
         {
-          p[ii] = idx;
+          p[ii] = p[curr_col];
+          std::cout << "ii " << ii << " nCoL " << nCol+1 << std::endl;
         }
+        p[col] = idx;
         curr_col = col;
       }
       // update row data
       i[idx] = row;
       // copy nonzero into buffer
       *x_it = *mat_it;
+      std::cout << "idx " << idx << ", nnz " << mat.getNumberOfNonZeroElements() << std::endl;
+      std::cout << "x_it - x " << x_it - x << ", nnz " << mat.getNumberOfNonZeroElements() << std::endl;
       idx++;x_it++;mat_it++; // move pointers
     }
+    p[nCol] = idx;
 
     csc* M = (csc *)malloc(sizeof(csc));
 

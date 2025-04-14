@@ -40,6 +40,9 @@ class MexFunction : public matlab::mex::Function {
     int nV = (int) inputs[1][0];
     int nC = (int) inputs[2][0];
     int nComp = (int) inputs[3][0];
+    std::cout << nV << std::endl;
+    std::cout << nC << std::endl;
+    std::cout << nComp << std::endl;
 
     // Use raw pointer because we will have to handle this as an implicit unique pointer stored in matlab.
     LCQPow::LCQProblem* problem = new LCQPow::LCQProblem(nV,nC,nComp);
