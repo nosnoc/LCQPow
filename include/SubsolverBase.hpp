@@ -24,38 +24,36 @@
 
 #include "Utilities.hpp"
 
-namespace LCQPow {
-    class SubsolverBase {
+namespace LCQPow
+{
+class SubsolverBase
+{
 
-        public:
+public:
+  /** Get the primal and dual solution.
+   *
+   * @param x Pointer to the (assumed to be allocated) primal solution vector.
+   * @param y Pointer to the (assumed to be allocated) dual solution vector.
+   */
+  virtual void getSolution(double* x, double* y) = 0;
 
-			/** Get the primal and dual solution.
-             *
-             * @param x Pointer to the (assumed to be allocated) primal solution vector.
-             * @param y Pointer to the (assumed to be allocated) dual solution vector.
-            */
-            virtual void getSolution( double* x, double* y ) = 0;
+  /** Abstract method for solving the QP.
+   *
+   * @param initialSolver A flag indicating whether the call should initialize the sequence.
+   * @param iterations A reference to write the number of subsolver iterates to.
+   * @param _g The (potentially) updated objective linear component.
+   * @param _lbA The (potentially) updated lower bounds of the linear constraints.
+   * @param _ubA The (potentially) updated upper bounds of the linear constraints.
+   * @param _x0 The primal initial guess. NULL pointer can be passed.
+   * @param _y0 The dual initial guess. NULL pointer can be passed.
+   * @param _lb The (potentially) updated lower box constraints. NULL pointer can be passed.
+   * @param _ub The (potentially) updated upper box constraints. NULL pointer can be passed.
+   */
+  virtual ReturnValue solve(bool initialSolve, int& iterations, int& exit_flag, const double* const _g,
+                            const double* const _lbA, const double* const _ubA, const double* const x0 = 0,
+                            const double* const y0 = 0, const double* const _lb = 0, const double* const _ub = 0)
+      = 0;
+};
+} // namespace LCQPow
 
-
-            /** Abstract method for solving the QP.
-             *
-             * @param initialSolver A flag indicating whether the call should initialize the sequence.
-             * @param iterations A reference to write the number of subsolver iterates to.
-             * @param _g The (potentially) updated objective linear component.
-             * @param _lbA The (potentially) updated lower bounds of the linear constraints.
-             * @param _ubA The (potentially) updated upper bounds of the linear constraints.
-             * @param _x0 The primal initial guess. NULL pointer can be passed.
-             * @param _y0 The dual initial guess. NULL pointer can be passed.
-             * @param _lb The (potentially) updated lower box constraints. NULL pointer can be passed.
-             * @param _ub The (potentially) updated upper box constraints. NULL pointer can be passed.
-            */
-            virtual ReturnValue solve(  bool initialSolve, int& iterations, int& exit_flag,
-                                        const double* const _g,
-                                        const double* const _lbA, const double* const _ubA,
-                                        const double* const x0 = 0, const double* const y0 = 0,
-                                        const double* const _lb = 0, const double* const _ub = 0) = 0;
-
-    };
-}
-
-#endif  // LCQPOW_SUBSOLVERBASE_HPP
+#endif // LCQPOW_SUBSOLVERBASE_HPP

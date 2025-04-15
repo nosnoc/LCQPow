@@ -22,94 +22,76 @@
 #ifndef LCQPOW_SUBSOLVER_HPP
 #define LCQPOW_SUBSOLVER_HPP
 
-#include "SubsolverQPOASES.hpp"
 #include "SubsolverOSQP.hpp"
+#include "SubsolverQPOASES.hpp"
 
-extern "C" {
-    #include <osqp.h>
+extern "C"
+{
+#include <osqp.h>
 }
 
+namespace LCQPow
+{
 
-namespace LCQPow {
+class Subsolver
+{
 
-    class Subsolver {
+public:
+  /** Default constructor. */
+  Subsolver();
 
-        public:
+  /** Constructor for dense matrices (qpOASES).
+   *
+   * @param nV The number of optimization variables.
+   * @param nC The number of linear constraints (should include the complementarity pairs).
+   * @param Q The Hessian matrix in dense format.
+   * @param A The linear constraint matrix (should include the rows of the complementarity selector matrices).
+   */
+  Subsolver(int nV, int nC, double* Q, double* A);
 
-			/** Default constructor. */
-			Subsolver( );
+  /** Constructor for sparse matrices (qpOASES/OSQP).
+   *
+   * @param nV The number of optimization variables.
+   * @param nC The number of linear constraints (should include the complementarity pairs).
+   * @param Q The Hessian matrix in sparse csc format.
+   * @param A The linear constraint matrix in sparse csc format (should include the rows of the complementarity selector
+   * matrices).
+   * @param qpSolver The QP subproblem solver to be used.
+   */
+  Subsolver(int nV, int nC, csc* Q, csc* A, QPSolver qpSolver);
 
+  /** Copy constructor. */
+  Subsolver(const Subsolver& rhs);
 
-            /** Constructor for dense matrices (qpOASES).
-             *
-             * @param nV The number of optimization variables.
-             * @param nC The number of linear constraints (should include the complementarity pairs).
-             * @param Q The Hessian matrix in dense format.
-             * @param A The linear constraint matrix (should include the rows of the complementarity selector matrices).
-            */
-            Subsolver(  int nV,
-                        int nC,
-                        double* Q,
-                        double* A );
+  /** Assignment operator (deep copy). */
+  virtual Subsolver& operator=(const Subsolver& rhs);
 
+  /** Write solution to x and y. */
+  void getSolution(double* x, double* y);
 
-            /** Constructor for sparse matrices (qpOASES/OSQP).
-             *
-             * @param nV The number of optimization variables.
-             * @param nC The number of linear constraints (should include the complementarity pairs).
-             * @param Q The Hessian matrix in sparse csc format.
-             * @param A The linear constraint matrix in sparse csc format (should include the rows of the complementarity selector matrices).
-             * @param qpSolver The QP subproblem solver to be used.
-            */
-            Subsolver(  int nV,
-                        int nC,
-                        csc* Q,
-                        csc* A,
-                        QPSolver qpSolver);
+  /** Abstract method for solving the QP. */
+  ReturnValue solve(bool initialSolve, int& iterations, int& exit_flag, const double* g, const double* lbA,
+                    const double* ubA, const double* x0 = 0, const double* y0 = 0, const double* lb = 0,
+                    const double* ub = 0);
 
+  /** Setting the user options. */
+  void setOptions(qpOASES::Options& options);
 
-            /** Copy constructor. */
-            Subsolver(const Subsolver& rhs);
+  /** Setting the user options. */
+  void setOptions(OSQPSettings* settings);
 
+protected:
+  /** Copies all members from given rhs object. */
+  void copy(const Subsolver& rhs);
 
-            /** Assignment operator (deep copy). */
-            virtual Subsolver& operator=(const Subsolver& rhs);
+private:
+  // The solver type
+  QPSolver qpSolver; /**< Inidicating which qpSolver to use. */
 
+  // The different solvers
+  SubsolverQPOASES solverQPOASES; /**< When using qpOASES. */
+  SubsolverOSQP solverOSQP;       /**< When using OSQP. */
+};
+} // namespace LCQPow
 
-            /** Write solution to x and y. */
-            void getSolution( double* x, double* y );
-
-
-            /** Abstract method for solving the QP. */
-            ReturnValue solve(  bool initialSolve, int& iterations, int& exit_flag,
-                                const double* g,
-                                const double* lbA, const double* ubA,
-                                const double* x0 = 0, const double* y0 = 0,
-                                const double* lb = 0, const double* ub = 0);
-
-
-            /** Setting the user options. */
-            void setOptions( qpOASES::Options& options );
-
-
-            /** Setting the user options. */
-            void setOptions( OSQPSettings* settings );
-            
-
-        protected:
-
-            /** Copies all members from given rhs object. */
-            void copy(const Subsolver& rhs);
-
-
-        private:
-            // The solver type
-            QPSolver qpSolver;                      /**< Inidicating which qpSolver to use. */
-
-            // The different solvers
-        	SubsolverQPOASES solverQPOASES;         /**< When using qpOASES. */
-			SubsolverOSQP solverOSQP;				/**< When using OSQP. */
-    };
-}
-
-#endif  // LCQPOW_SUBSOLVER_HPP
+#endif // LCQPOW_SUBSOLVER_HPP

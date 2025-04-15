@@ -19,34 +19,33 @@
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #ifndef LCQPOW_MESSAGEHANDLER_HPP
 #define LCQPOW_MESSAGEHANDLER_HPP
 
 #include "Utilities.hpp"
 
-namespace LCQPow {
+namespace LCQPow
+{
 
-    class MessageHandler {
+class MessageHandler
+{
 
-        public:
-            /** Print a message.
-             *
-             * @param ret A return value which will impact the print message.
-             * @param type The message type (will determine the message pre-print).
-             *
-             * @returns Simply passes the return value that was given. */
-            static ReturnValue PrintMessage( ReturnValue ret, MessageType type = MESSAGE );
+public:
+  /** Print a message.
+   *
+   * @param ret A return value which will impact the print message.
+   * @param type The message type (will determine the message pre-print).
+   *
+   * @returns Simply passes the return value that was given. */
+  static ReturnValue PrintMessage(ReturnValue ret, MessageType type = MESSAGE);
 
+  /** Print a solution status.
+   *
+   * @param algoStat The status to be printed.
+   *
+   * @returns Simply passes the algorithm status that was given. */
+  static AlgorithmStatus PrintSolution(AlgorithmStatus algoStat);
+};
+} // namespace LCQPow
 
-            /** Print a solution status.
-             *
-             * @param algoStat The status to be printed.
-             *
-             * @returns Simply passes the algorithm status that was given. */
-            static AlgorithmStatus PrintSolution( AlgorithmStatus algoStat );
-
-    };
-}
-
-#endif  // LCQPOW_MESSAGEHANDLER_HPP
+#endif // LCQPOW_MESSAGEHANDLER_HPP

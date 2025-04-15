@@ -19,199 +19,161 @@
  *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #ifndef LCQPOW_OPTIONS_HPP
 #define LCQPOW_OPTIONS_HPP
 
 #include "Utilities.hpp"
 
-namespace LCQPow {
+namespace LCQPow
+{
 
-    class Options {
+class Options
+{
 
-        public:
+public:
+  /** Default constructor. */
+  Options();
 
-            /** Default constructor. */
-            Options( );
+  /** Copy constructor (deep copy).
+   *
+   * @param rhs The object to be copied.
+   */
+  Options(const Options& rhs);
 
+  /** Destructor. */
+  ~Options();
 
-            /** Copy constructor (deep copy).
-             *
-             * @param rhs The object to be copied.
-            */
-            Options( const Options& rhs );
+  /** Assignment operator.
+   *
+   * @param rhs The obejct from which to assign.
+   */
+  Options& operator=(const Options& rhs);
 
+  /** Sets all options to default values. */
+  void setToDefault();
 
-            /** Destructor. */
-            ~Options( );
+  /** Get stationarity tolerance. */
+  double getStationarityTolerance();
 
+  /** Set stationarity tolerance. */
+  ReturnValue setStationarityTolerance(double val);
 
-            /** Assignment operator.
-             *
-             * @param rhs The obejct from which to assign.
-            */
-            Options& operator=( const Options& rhs );
+  /** Get complementarity tolerance. */
+  double getComplementarityTolerance();
 
+  /** Set complementarity tolerance. */
+  ReturnValue setComplementarityTolerance(double val);
 
-            /** Sets all options to default values. */
-            void setToDefault( );
+  /** Get initial penalty parameter. */
+  double getInitialPenaltyParameter();
 
+  /** Set complementarity tolerance. */
+  ReturnValue setInitialPenaltyParameter(double val);
 
-            /** Get stationarity tolerance. */
-            double getStationarityTolerance( );
+  /** Get penalty parameter update factor. */
+  double getPenaltyUpdateFactor();
 
+  /** Set penalty parameter update factor. */
+  ReturnValue setPenaltyUpdateFactor(double val);
 
-            /** Set stationarity tolerance. */
-            ReturnValue setStationarityTolerance( double val );
+  /** Get whether to solve for (complement.) unconstrained global minumum first. */
+  bool getSolveZeroPenaltyFirst();
 
+  /** Set whether to solve for (complement.) unconstrained global minumum first. */
+  ReturnValue setSolveZeroPenaltyFirst(bool val);
 
-            /** Get complementarity tolerance. */
-            double getComplementarityTolerance( );
+  /** Get whether to perform step perturbation. */
+  bool getPerturbStep();
 
+  /** Set whether to perform step perturbation. */
+  ReturnValue setPerturbStep(bool val);
 
-            /** Set complementarity tolerance. */
-            ReturnValue setComplementarityTolerance( double val );
+  /** Get maximum number of iterations. */
+  int getMaxIterations();
 
+  /** Set maximum number of iterations. */
+  ReturnValue setMaxIterations(int val);
 
-            /** Get initial penalty parameter. */
-            double getInitialPenaltyParameter( );
+  /** Get maximum penalty value. */
+  double getMaxPenaltyParameter();
 
+  /** Set maximum penalty value. */
+  ReturnValue setMaxPenaltyParameter(double val);
 
-            /** Set complementarity tolerance. */
-            ReturnValue setInitialPenaltyParameter( double val );
+  /** Get number of previous complementarity values to check against (Leyffer strategy). */
+  int getNDynamicPenalty();
 
+  /** Set number of previous complementarity values to check against (Leyffer strategy). */
+  ReturnValue setNDynamicPenalty(int val);
 
-            /** Get penalty parameter update factor. */
-            double getPenaltyUpdateFactor( );
+  /** Get fraction required for complementarity loss (Leyffer strategy). */
+  double getEtaDynamicPenalty();
 
+  /** Get fraction required for complementarity loss (Leyffer strategy). */
+  ReturnValue setEtaDynamicPenalty(double val);
 
-            /** Set penalty parameter update factor. */
-            ReturnValue setPenaltyUpdateFactor( double val );
+  /** Get print level. */
+  PrintLevel getPrintLevel();
 
+  /** Set print level. */
+  ReturnValue setPrintLevel(PrintLevel val);
 
-            /** Get whether to solve for (complement.) unconstrained global minumum first. */
-            bool getSolveZeroPenaltyFirst( );
+  /** Set print level (using an integer). */
+  ReturnValue setPrintLevel(int val);
 
+  /** Get whether to store information per iterate. */
+  bool getStoreSteps();
 
-            /** Set whether to solve for (complement.) unconstrained global minumum first. */
-            ReturnValue setSolveZeroPenaltyFirst( bool val );
+  /** Set whether to store information per iterate. */
+  ReturnValue setStoreSteps(bool val);
 
+  /** Get QP solver. */
+  QPSolver getQPSolver();
 
-            /** Get whether to perform step perturbation. */
-            bool getPerturbStep( );
+  /** Set print level. */
+  ReturnValue setQPSolver(QPSolver val);
 
+  /** Set print level (using an integer). */
+  ReturnValue setQPSolver(int val);
 
-            /** Set whether to perform step perturbation. */
-            ReturnValue setPerturbStep( bool val );
+  /** Pass options for qpOASES. */
+  ReturnValue setqpOASESOptions(const qpOASES::Options& _options);
 
+  /** Get options for qpOASES. */
+  qpOASES::Options& getqpOASESOptions();
 
-            /** Get maximum number of iterations. */
-            int getMaxIterations( );
+  /** Get options for OSQP. */
+  ReturnValue setOSQPOptions(OSQPSettings* _options);
 
+  /** Pass options for OSQP. */
+  OSQPSettings* getOSQPOptions();
 
-            /** Set maximum number of iterations. */
-            ReturnValue setMaxIterations( int val );
+protected:
+  void copy(const Options& rhs); /**< Copy each property. */
 
+  double stationarityTolerance;    /**< Tolerance for 1-Norm of stationarity violation. */
+  double complementarityTolerance; /**< Complementarity tolerance. */
+  double initialPenaltyParameter;  /**< Start value for complementarity penalty term. */
+  double penaltyUpdateFactor;      /**< Factor for updating penaltised complementarity term. */
 
-            /** Get maximum penalty value. */
-            double getMaxPenaltyParameter( );
+  bool solveZeroPenaltyFirst; /**< Flag indicating whether first QP should ignore penalization. */
 
+  bool perturbStep; /**< Flag whether to perform step perturbation. */
 
-            /** Set maximum penalty value. */
-            ReturnValue setMaxPenaltyParameter( double val );
+  int maxIterations;          /**< Maximum number of iterations to be performed. */
+  double maxPenaltyParameter; /**< Maximum penalty value. */
 
+  int nDynamicPenalty; /**< Number of previous iterates to compare complementarity loss (only enabled if positive). */
+  double etaDynamicPenalty; /**< Parameter describing fraction of required complementarity loss. */
 
-            /** Get number of previous complementarity values to check against (Leyffer strategy). */
-            int getNDynamicPenalty( );
+  PrintLevel printLevel; /**< Print level. */
 
+  bool storeSteps; /**< Whether to store detailed information for each iterate (time consuming). */
 
-            /** Set number of previous complementarity values to check against (Leyffer strategy). */
-            ReturnValue setNDynamicPenalty( int val );
+  QPSolver qpSolver;              /**< The QP solver to be used. */
+  qpOASES::Options qpOASES_opts;  /**< qpOASES options. */
+  OSQPSettings* OSQP_opts = NULL; /**< OSQP options. */
+};
+} // namespace LCQPow
 
-
-            /** Get fraction required for complementarity loss (Leyffer strategy). */
-            double getEtaDynamicPenalty( );
-
-
-            /** Get fraction required for complementarity loss (Leyffer strategy). */
-            ReturnValue setEtaDynamicPenalty( double val );
-
-
-            /** Get print level. */
-            PrintLevel getPrintLevel( );
-
-
-            /** Set print level. */
-            ReturnValue setPrintLevel( PrintLevel val );
-
-
-            /** Set print level (using an integer). */
-            ReturnValue setPrintLevel( int val );
-
-
-            /** Get whether to store information per iterate. */
-            bool getStoreSteps( );
-
-
-            /** Set whether to store information per iterate. */
-            ReturnValue setStoreSteps( bool val );
-
-
-            /** Get QP solver. */
-            QPSolver getQPSolver( );
-
-
-            /** Set print level. */
-            ReturnValue setQPSolver( QPSolver val );
-
-
-            /** Set print level (using an integer). */
-            ReturnValue setQPSolver( int val );
-
-
-			/** Pass options for qpOASES. */
-			ReturnValue setqpOASESOptions( const qpOASES::Options& _options );
-			
-            
-            /** Get options for qpOASES. */
-			qpOASES::Options& getqpOASESOptions( );
-
-
-			/** Get options for OSQP. */
-			ReturnValue setOSQPOptions( OSQPSettings *_options );
-			
-
-			/** Pass options for OSQP. */
-			OSQPSettings* getOSQPOptions( );
-			
-
-
-        protected:
-            void copy( const Options& rhs );            /**< Copy each property. */
-
-            double stationarityTolerance;               /**< Tolerance for 1-Norm of stationarity violation. */
-            double complementarityTolerance;		    /**< Complementarity tolerance. */
-            double initialPenaltyParameter;	            /**< Start value for complementarity penalty term. */
-            double penaltyUpdateFactor;	                /**< Factor for updating penaltised complementarity term. */
-
-            bool solveZeroPenaltyFirst;                 /**< Flag indicating whether first QP should ignore penalization. */
-
-            bool perturbStep;                           /**< Flag whether to perform step perturbation. */
-
-            int maxIterations;                          /**< Maximum number of iterations to be performed. */
-            double maxPenaltyParameter;                 /**< Maximum penalty value. */
-
-            int nDynamicPenalty;                        /**< Number of previous iterates to compare complementarity loss (only enabled if positive). */
-            double etaDynamicPenalty;                   /**< Parameter describing fraction of required complementarity loss. */
-
-            PrintLevel printLevel;                      /**< Print level. */
-
-            bool storeSteps;                            /**< Whether to store detailed information for each iterate (time consuming). */
-
-            QPSolver qpSolver;                          /**< The QP solver to be used. */
-			qpOASES::Options qpOASES_opts;			    /**< qpOASES options. */
-			OSQPSettings *OSQP_opts = NULL;			    /**< OSQP options. */	
-    };
-}
-
-#endif  // LCQPOW_UTILITIES_HPP
+#endif // LCQPOW_UTILITIES_HPP
