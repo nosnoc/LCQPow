@@ -439,12 +439,9 @@ class MexFunction : public matlab::mex::Function {
     UNWRAP_ARRAY(lb,12,nV);
     UNWRAP_ARRAY(ub,13,nV);
 
-    std::cout << "pre load Q: " << Q << std::endl;
     LCQPow::ReturnValue ret = problem->loadLCQP(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, x0, y0);
-    std::cout << Q << std::endl;
-    
+
     // Cleanup vectors
-    std::cout << "cleaning up vectors" << std::endl;
     del_g(g);
     MAYBE_CLEANUP_VECTOR(lbL);
     MAYBE_CLEANUP_VECTOR(ubL);
@@ -455,19 +452,11 @@ class MexFunction : public matlab::mex::Function {
     MAYBE_CLEANUP_VECTOR(lb);
     MAYBE_CLEANUP_VECTOR(ub);
 
-    // TODO(@anton): why does this double free?
-    // TODO(@anton): this now leaks memory, fix it.
-    std::cout << "clearing Q" << std::endl;
     // Clear sparse specific memory
     LCQPow::Utilities::ClearSparseMat(Q);
-    std::cout << "clearing L" << std::endl;
     LCQPow::Utilities::ClearSparseMat(L);
-    std::cout << "clearing R" << std::endl;
     LCQPow::Utilities::ClearSparseMat(R);
-    std::cout << "clearing A" << std::endl;
     if (A != 0) LCQPow::Utilities::ClearSparseMat(A);
-    std::cout << "returning buildSparse" << std::endl;
-    std::cout << ret << std::endl;
     return ret;
   }
   
@@ -478,7 +467,6 @@ class MexFunction : public matlab::mex::Function {
     int n = nCol;
     int m = nRow;
     int* p = (int*) malloc((nCol+1)*sizeof(int));
-    std::cout << p << std::endl;
 
     // Get necessary values
     auto mat_it = mat.begin();
@@ -502,7 +490,6 @@ class MexFunction : public matlab::mex::Function {
         for(int ii = curr_col+1; ii < col; ii++)
         {
           p[ii] = p[curr_col];
-          std::cout << "ii " << ii << " nCoL " << nCol+1 << std::endl;
         }
         p[col] = idx;
         curr_col = col;
@@ -511,9 +498,12 @@ class MexFunction : public matlab::mex::Function {
       i[idx] = row;
       // copy nonzero into buffer
       *x_it = *mat_it;
-      std::cout << "idx " << idx << ", nnz " << mat.getNumberOfNonZeroElements() << std::endl;
-      std::cout << "x_it - x " << x_it - x << ", nnz " << mat.getNumberOfNonZeroElements() << std::endl;
       idx++;x_it++;mat_it++; // move pointers
+    }
+    // Populate remaining pointers in p
+    for(int ii = curr_col+1; ii < nCol; ii++)
+    {
+      p[ii] = p[curr_col];
     }
     p[nCol] = idx;
 
@@ -528,7 +518,6 @@ class MexFunction : public matlab::mex::Function {
 		M->x = x;
 		M->nz = -1;
 		M->nzmax = mat.getNumberOfNonZeroElements();
-
     return M;
   }
   

@@ -632,10 +632,7 @@ namespace LCQPow {
 		R_sparse = Utilities::copyCSC(R_new);
 
 		// Get number of elements
-    for(int ii=0; ii<nV+1; ii++)
-      std::cout << ii <<" L_sparse->p[ii]: " << L_sparse->p[ii] << std::endl;
-    std::cout << "L_sparse->p[nV]: " << L_sparse->p[nV] << std::endl;
-		int tmpA_nnx = L_sparse->p[nV] + R_sparse->p[nV];
+  	int tmpA_nnx = L_sparse->p[nV] + R_sparse->p[nV];
 
 		if (Utilities::isNotNullPtr(A_new)) {
 			tmpA_nnx += Utilities::isNotNullPtr(A_new->p) ? A_new->p[nV] : 0;
@@ -791,8 +788,6 @@ namespace LCQPow {
 			return LCQPOBJECT_NOT_SETUP;
 
 		Q_sparse = Utilities::copyCSC(Q_new);
-    for(int ii=0; ii<nV+1; ii++)
-      std::cout << ii <<" Q_sparse->p[ii]: " << Q_sparse->p[ii] << std::endl;
 
 		return ReturnValue::SUCCESSFUL_RETURN;
 	}
