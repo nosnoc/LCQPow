@@ -23,115 +23,108 @@
 #include "MessageHandler.hpp"
 #include <cstring>
 
-extern "C" {
-    #include <osqp.h>
+extern "C"
+{
+#include <osqp.h>
 }
 
-namespace LCQPow {
+namespace LCQPow
+{
 
+Subsolver::Subsolver() {}
 
-    Subsolver::Subsolver( ) { }
+Subsolver::Subsolver(int nV, int nC, double* Q, double* A)
+{
+  qpSolver = QPSolver::QPOASES_DENSE;
 
-
-    Subsolver::Subsolver(   int nV, int nC,
-                            double* Q, double* A )
-    {
-        qpSolver = QPSolver::QPOASES_DENSE;
-
-        SubsolverQPOASES tmp(nV, nC, Q, A);
-        solverQPOASES = tmp;
-    }
-
-
-    Subsolver::Subsolver(   int nV, int nC,
-                            csc* Q, csc* A,
-                            QPSolver _qpSolver )
-    {
-        qpSolver = _qpSolver;
-
-        if (qpSolver == QPSolver::QPOASES_SPARSE) {
-            SubsolverQPOASES tmp(nV, nC, Q, A);
-            solverQPOASES = tmp;
-        } else if (qpSolver == QPSolver::OSQP_SPARSE) {
-            SubsolverOSQP tmp(Q, A);
-            solverOSQP = tmp;
-        } else {
-            MessageHandler::PrintMessage( INVALID_QPSOLVER, ERROR );
-
-            // Must abort here (since we can't return an error).
-            abort();
-        }
-    }
-
-
-    Subsolver::Subsolver(const Subsolver& rhs)
-    {
-        copy( rhs );
-    }
-
-
-    Subsolver& Subsolver::operator=(const Subsolver& rhs)
-    {
-        if ( this != &rhs )
-            {
-                copy( rhs );
-            }
-
-        return *this;
-    }
-
-
-    void Subsolver::getSolution( double* x, double* y )
-    {
-        if (qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE) {
-            solverQPOASES.getSolution( x, y );
-        } else if (qpSolver == QPSolver::OSQP_SPARSE) {
-            solverOSQP.getSolution( x, y );
-        }
-    }
-
-
-    ReturnValue Subsolver::solve(   bool initialSolve, int& iterations, int& exit_flag,
-                                    const double* g,
-                                    const double* lbA, const double* ubA,
-                                    const double* x0, const double* y0,
-                                    const double* lb, const double* ub)
-    {
-        ReturnValue ret = ReturnValue::SUCCESSFUL_RETURN;
-        if (qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE) {
-            ret = solverQPOASES.solve( initialSolve, iterations, exit_flag, g, lbA, ubA, x0, y0, lb, ub );
-        } else if (qpSolver == QPSolver::OSQP_SPARSE) {
-            ret = solverOSQP.solve( initialSolve, iterations, exit_flag, g, lbA, ubA, x0, y0, lb, ub );
-        } else {
-            ret = INVALID_QPSOLVER;
-        }
-
-        return ret;
-    }
-
-
-    void Subsolver::setOptions( qpOASES::Options& options ) 
-    {
-        solverQPOASES.setOptions( options );
-    }
-
-
-    void Subsolver::setOptions( OSQPSettings* settings )
-    {
-        solverOSQP.setOptions( settings );
-    }
-
-
-    void Subsolver::copy(const Subsolver& rhs)
-    {
-        qpSolver = rhs.qpSolver;
-
-        if (qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE) {
-            SubsolverQPOASES tmp( rhs.solverQPOASES );
-            solverQPOASES = tmp;
-        } else if (qpSolver == QPSolver::OSQP_SPARSE) {
-            SubsolverOSQP tmp( rhs.solverOSQP );
-            solverOSQP = tmp;
-        }
-    }
+  SubsolverQPOASES tmp(nV, nC, Q, A);
+  solverQPOASES = tmp;
 }
+
+Subsolver::Subsolver(int nV, int nC, csc* Q, csc* A, QPSolver _qpSolver)
+{
+  qpSolver = _qpSolver;
+
+  if(qpSolver == QPSolver::QPOASES_SPARSE)
+  {
+    SubsolverQPOASES tmp(nV, nC, Q, A);
+    solverQPOASES = tmp;
+  }
+  else if(qpSolver == QPSolver::OSQP_SPARSE)
+  {
+    SubsolverOSQP tmp(Q, A);
+    solverOSQP = tmp;
+  }
+  else
+  {
+    MessageHandler::PrintMessage(INVALID_QPSOLVER, ERROR);
+
+    // Must abort here (since we can't return an error).
+    abort();
+  }
+}
+
+Subsolver::Subsolver(const Subsolver& rhs) { copy(rhs); }
+
+Subsolver& Subsolver::operator=(const Subsolver& rhs)
+{
+  if(this != &rhs)
+  {
+    copy(rhs);
+  }
+
+  return *this;
+}
+
+void Subsolver::getSolution(double* x, double* y)
+{
+  if(qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE)
+  {
+    solverQPOASES.getSolution(x, y);
+  }
+  else if(qpSolver == QPSolver::OSQP_SPARSE)
+  {
+    solverOSQP.getSolution(x, y);
+  }
+}
+
+ReturnValue Subsolver::solve(bool initialSolve, int& iterations, int& exit_flag, const double* g, const double* lbA,
+                             const double* ubA, const double* x0, const double* y0, const double* lb, const double* ub)
+{
+  ReturnValue ret = ReturnValue::SUCCESSFUL_RETURN;
+  if(qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE)
+  {
+    ret = solverQPOASES.solve(initialSolve, iterations, exit_flag, g, lbA, ubA, x0, y0, lb, ub);
+  }
+  else if(qpSolver == QPSolver::OSQP_SPARSE)
+  {
+    ret = solverOSQP.solve(initialSolve, iterations, exit_flag, g, lbA, ubA, x0, y0, lb, ub);
+  }
+  else
+  {
+    ret = INVALID_QPSOLVER;
+  }
+
+  return ret;
+}
+
+void Subsolver::setOptions(qpOASES::Options& options) { solverQPOASES.setOptions(options); }
+
+void Subsolver::setOptions(OSQPSettings* settings) { solverOSQP.setOptions(settings); }
+
+void Subsolver::copy(const Subsolver& rhs)
+{
+  qpSolver = rhs.qpSolver;
+
+  if(qpSolver == QPSolver::QPOASES_DENSE || qpSolver == QPSolver::QPOASES_SPARSE)
+  {
+    SubsolverQPOASES tmp(rhs.solverQPOASES);
+    solverQPOASES = tmp;
+  }
+  else if(qpSolver == QPSolver::OSQP_SPARSE)
+  {
+    SubsolverOSQP tmp(rhs.solverOSQP);
+    solverOSQP = tmp;
+  }
+}
+} // namespace LCQPow
