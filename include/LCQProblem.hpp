@@ -259,6 +259,13 @@ namespace LCQPow {
      */
     int getNComp() const;
 
+    /** Get (a copy of) Options object
+     *
+     * @return Returns deep copy of current Options object.
+     */
+     Options getOptions() const;
+
+
 		/**
     	 *	PROTECTED METHODS
 		 */

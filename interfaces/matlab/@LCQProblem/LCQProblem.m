@@ -14,7 +14,7 @@ classdef LCQProblem < handle
         loadLCQP(obj, Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, opts);
 
         %
-        runSolver();
+        [varargout] = runSolver(obj);
 
         function delete(obj)
         % obj is always scalar, if it isn't we panic :)

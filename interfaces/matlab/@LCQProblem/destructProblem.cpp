@@ -36,7 +36,7 @@ class MexFunction : public matlab::mex::Function {
     // Check inputs are valid
     checkArguments(outputs, inputs);
 
-    // Assume the inputs are integral, this is generally not true but, shrug, it is fine.
+    // Get self value
     matlab::data::TypedArray<std::uintptr_t> self_array(std::move(matlab->getProperty(inputs[0], u"self")));
 
     if (self_array.isEmpty())

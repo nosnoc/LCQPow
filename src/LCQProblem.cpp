@@ -1548,6 +1548,11 @@ int LCQProblem::getNComp() const
   return nComp;
 }
 
+Options LCQProblem::getOptions() const
+{
+  return options;
+}
+
 
 	void LCQProblem::getOutputStatistics(OutputStatistics& _stats) const
 	{

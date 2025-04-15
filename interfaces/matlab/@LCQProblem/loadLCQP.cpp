@@ -75,7 +75,8 @@ using matlab::mex::ArgumentList;
 
 class MexFunction : public matlab::mex::Function {
  public:
-  void operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
+  void operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs)
+  {
     std::shared_ptr<matlab::engine::MATLABEngine> matlab = getEngine();
     matlab::data::ArrayFactory factory;
 
@@ -128,7 +129,6 @@ class MexFunction : public matlab::mex::Function {
     }
     // call set options
     // Set options and print them
-    std::cout << "AAAAAAAAAAAAAAAAhhhhhh" << std::endl;
     problem->setOptions(options);
   }
 
@@ -237,7 +237,8 @@ class MexFunction : public matlab::mex::Function {
     return 0;
   }
 
-  void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
+  void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs)
+  {
     std::shared_ptr<matlab::engine::MATLABEngine> matlab = getEngine();
     matlab::data::ArrayFactory factory;
     if(outputs.size() > 0)
