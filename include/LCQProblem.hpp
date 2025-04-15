@@ -241,6 +241,30 @@ namespace LCQPow {
 			 */
 			inline void setOptions(	const Options& _options	);
 
+    /** Get nV
+     *
+     * @return Returns nV.
+     */
+    int getNV() const;
+
+    /** Get nV
+     *
+     * @return Returns nC.
+     */
+    int getNC() const;
+
+    /** Get nV
+     *
+     * @return Returns nComp.
+     */
+    int getNComp() const;
+
+    /** Get (a copy of) Options object
+     *
+     * @return Returns deep copy of current Options object.
+     */
+     Options getOptions() const;
+
 
 		/**
     	 *	PROTECTED METHODS

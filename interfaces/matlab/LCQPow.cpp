@@ -107,7 +107,8 @@ void colMajorToRowMajor(double* col_maj, double* row_maj, int m, int n)
             row_maj[i*n + j] = col_maj[j*m + i];
 }
 
-void printOptions( Options options ) {
+void printOptions(Options options)
+{
     mexPrintf(" \n Using LCQPow Options: \n");
     mexPrintf("          rho0: %g \n", options.getInitialPenaltyParameter());
     mexPrintf("          beta: %g \n", options.getPenaltyUpdateFactor());
@@ -140,10 +141,9 @@ csc* readSparseMatrix(const mxArray* mat, int nRow, int nCol)
     return LCQPow::Utilities::createCSC(nRow, nCol, M_p[nCol], M_data, M_i, M_p);
 }
 
-void readVectors(
-    const mxArray** prhs, int nrhs, int nC, double** g,
-    double** lbL, double** ubL, double** lbR, double** ubR,
-    double** lbA, double** ubA, double** lb, double** ub)
+void readVectors(const mxArray** prhs, int nrhs, int nC, double** g,
+                 double** lbL, double** ubL, double** lbR, double** ubR,
+                 double** lbA, double** ubA, double** lb, double** ub)
 {
     *g = (double*) mxGetPr( prhs[1] );
     *lbL = (double*) mxGetPr( prhs[4] );
@@ -165,8 +165,8 @@ void readVectors(
     }
 }
 
-int LCQPSparse(LCQProblem& lcqp, int nV, int nComp, int nC, int nrhs, const mxArray* prhs[], double* x0, double* y0) {
-
+int LCQPSparse(LCQProblem& lcqp, int nV, int nComp, int nC, int nrhs, const mxArray* prhs[], double* x0, double* y0)
+{
     if ( !mxIsSparse(prhs[0]) || !mxIsSparse(prhs[2]) || !mxIsSparse(prhs[3]) || (nC > 0 && !mxIsSparse(prhs[8])) )
 	{
         mexPrintf("If using the sparse mode, please make sure to provide all matrices in sparse format!\n");
@@ -286,7 +286,7 @@ int LCQPDense(LCQProblem& lcqp, int nV, int nComp, int nC, int nrhs, const mxArr
 /*
  *	has options value
  */
-bool hasOptionsValue( const mxArray* optionsPtr, const char* const optionString, double** optionValue )
+bool hasOptionsValue(const mxArray* optionsPtr, const char* const optionString, double** optionValue)
 {
 	mxArray* optionName = mxGetField( optionsPtr,0,optionString );
 
@@ -315,7 +315,7 @@ bool hasOptionsValue( const mxArray* optionsPtr, const char* const optionString,
 /*
  *	has options value
  */
-bool hasOptionsValue( const mxArray* optionsPtr, const char* const optionString, char** optionValue )
+bool hasOptionsValue(const mxArray* optionsPtr, const char* const optionString, char** optionValue)
 {
 	mxArray* optionName = mxGetField( optionsPtr,0,optionString );
 
@@ -344,7 +344,7 @@ bool hasOptionsValue( const mxArray* optionsPtr, const char* const optionString,
 /*
  *	setup qpOASES options
  */
-void setupqpOASESOptions( qpOASES::Options* options, const mxArray* optionsPtr )
+void setupqpOASESOptions(qpOASES::Options* options, const mxArray* optionsPtr)
 {
 	double* optionValue;
 	qpOASES::int_t optionValueInt;
@@ -567,7 +567,7 @@ void setupOSQPOptions(OSQPSettings* settings, const mxArray* optionsPtr)
 /*
  *  The main mex function
  */
-void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
     // Validate number of output arguments
     int nlhs_min = 1; int nlhs_max = 3;

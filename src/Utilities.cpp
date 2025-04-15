@@ -281,10 +281,31 @@ namespace LCQPow {
                 M->x = NULL;
             }
 
-            free (M);
+            free(M);
 			M = NULL;
 		}
     }
+
+void Utilities::ClearSparseMatCPP(csc* M)
+{
+  if (M != nullptr) {
+    if (M->p != nullptr) {
+      delete M->p;
+      M->p = nullptr;
+    }
+    if (M->i != nullptr) {
+      delete M->i;
+      M->i = nullptr;
+    }
+    if (M->x != nullptr) {
+      delete M->x;
+      M->x = nullptr;
+    }
+
+    delete M;
+    M = nullptr;
+  }
+}
 
 
     void Utilities::ClearSparseMat(csc** M)

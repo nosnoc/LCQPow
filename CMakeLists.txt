@@ -439,7 +439,169 @@ if (${BUILD_MATLAB_INTERFACE})
             COPY ${MATLAB_INTERFACE_DIR}/${MATLAB_INTERFACE_NAME}.m
             DESTINATION ${MATLAB_INTERFACE_DESTINATION}
         )
-    
+
+        file(
+            COPY ${MATLAB_INTERFACE_DIR}/${MATLAB_INTERFACE_NAME}_options.m
+            DESTINATION ${MATLAB_INTERFACE_DESTINATION}
+        )
+
+        # HERE STARTS A HACK
+        # Copy over new interface .m file
+        file(
+            COPY ${MATLAB_INTERFACE_DIR}/@LCQProblem/LCQProblem.m
+            DESTINATION ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem
+        )
+        # Include new matlab interface stuff
+	# constructProblem
+        matlab_add_mex(
+          NAME constructProblem
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/constructProblem.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/constructProblem
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          constructProblem
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          constructProblem
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+        )
+	
+        target_include_directories(
+          constructProblem
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
+	# destructProblem
+	matlab_add_mex(
+          NAME destructProblem
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/destructProblem.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/destructProblem
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          destructProblem
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          destructProblem
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+        )
+
+        target_include_directories(
+          destructProblem
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
+        	# loadLCQP
+	matlab_add_mex(
+          NAME loadLCQP
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/loadLCQP.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/loadLCQP
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          loadLCQP
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          loadLCQP
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+          PUBLIC -g
+        )
+
+        target_include_directories(
+          loadLCQP
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
+        # runProblem
+	matlab_add_mex(
+          NAME runProblem
+          SRC ${MATLAB_INTERFACE_DIR}/@LCQProblem/runProblem.cpp
+          OUTPUT_NAME ${MATLAB_INTERFACE_DESTINATION}/@LCQProblem/runProblem
+          LINK_TO "-llcqpow -lqpOASES -losqp -lmwblas -lmwlapack -lmwma57"
+        )
+
+        target_link_directories(
+          runProblem
+          PUBLIC ${CMAKE_BINARY_DIR}/lib
+        )
+
+        target_compile_options(
+          runProblem
+          PUBLIC -D${DEF_SOLVER}
+          PUBLIC -D__USE_LONG_FINTS__
+          PUBLIC -D__MATLAB__
+          PUBLIC -D__NO_COPYRIGHT__
+          PUBLIC -D__cpluplus
+          PUBLIC -O
+          PUBLIC -largeArrayDims
+          PUBLIC -lmwblas
+          PUBLIC -lmwlapack
+          PUBLIC -lmwma57
+          PUBLIC -llcqpow
+          PUBLIC -lqpOASES
+          PUBLIC -losqp
+          PUBLIC -g
+        )
+
+        target_include_directories(
+          runProblem
+          PRIVATE include
+          SYSTEM ${osqp_include}
+          SYSTEM ${qpoases_include}
+        )
+
     endif()
 
 endif()

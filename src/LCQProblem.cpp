@@ -32,15 +32,15 @@
 #include <stdlib.h>
 
 #include <qpOASES.hpp>
-
+  
 using qpOASES::QProblem;
 
 namespace LCQPow {
 
-	LCQProblem::LCQProblem( ) { }
+	LCQProblem::LCQProblem() {}
 
 
-	LCQProblem::LCQProblem( int _nV, int _nC, int _nComp )
+	LCQProblem::LCQProblem(int _nV, int _nC, int _nComp)
 	{
 		/* consistency checks */
 		if ( _nV <= 0 )
@@ -79,19 +79,19 @@ namespace LCQPow {
 	}
 
 
-	LCQProblem::~LCQProblem( ) {
+	LCQProblem::~LCQProblem()
+  {
 		clear();
 	}
 
 
-	ReturnValue LCQProblem::loadLCQP(	const double* const _Q, const double* const _g,
-										const double* const _L, const double* const _R,
-										const double* const _lbL, const double* const _ubL,
-										const double* const _lbR, const double* const _ubR,
-										const double* const _A, const double* const _lbA, const double* const _ubA,
-										const double* const _lb, const double* const _ub,
-										const double* const _x0, const double* const _y0
-										)
+	ReturnValue LCQProblem::loadLCQP(const double* const _Q, const double* const _g,
+                                   const double* const _L, const double* const _R,
+                                   const double* const _lbL, const double* const _ubL,
+                                   const double* const _lbR, const double* const _ubR,
+                                   const double* const _A, const double* const _lbA, const double* const _ubA,
+                                   const double* const _lb, const double* const _ub,
+                                   const double* const _x0, const double* const _y0)
 	{
 		ReturnValue ret;
 
@@ -144,14 +144,13 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::loadLCQP(	const char* const Q_file, const char* const g_file,
-										const char* const L_file, const char* const R_file,
-										const char* const lbL_file, const char* const ubL_file,
-										const char* const lbR_file, const char* const ubR_file,
-										const char* const A_file, const char* const lbA_file, const char* const ubA_file,
-										const char* const lb_file, const char* const ub_file,
-										const char* const x0_file, const char* const y0_file
-										)
+	ReturnValue LCQProblem::loadLCQP(const char* const Q_file, const char* const g_file,
+                                   const char* const L_file, const char* const R_file,
+                                   const char* const lbL_file, const char* const ubL_file,
+                                   const char* const lbR_file, const char* const ubR_file,
+                                   const char* const A_file, const char* const lbA_file, const char* const ubA_file,
+                                   const char* const lb_file, const char* const ub_file,
+                                   const char* const x0_file, const char* const y0_file)
 	{
 		ReturnValue ret;
 
@@ -387,14 +386,13 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::loadLCQP(	const csc* const _Q, const double* const _g,
-										const csc* const _L, const csc* const _R,
-										const double* const _lbL, const double* const _ubL,
-										const double* const _lbR, const double* const _ubR,
-										const csc* const _A, const double* const _lbA, const double* const _ubA,
-										const double* const _lb, const double* const _ub,
-										const double* const _x0, const double* const _y0
-										)
+	ReturnValue LCQProblem::loadLCQP(const csc* const _Q, const double* const _g,
+                                   const csc* const _L, const csc* const _R,
+                                   const double* const _lbL, const double* const _ubL,
+                                   const double* const _lbR, const double* const _ubR,
+                                   const csc* const _A, const double* const _lbA, const double* const _ubA,
+                                   const double* const _lb, const double* const _ub,
+                                   const double* const _x0, const double* const _y0)
 	{
 		ReturnValue ret;
 
@@ -441,7 +439,7 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::runSolver( )
+	ReturnValue LCQProblem::runSolver()
 	{
 		// Initialize variables
 		ReturnValue ret = initializeSolver();
@@ -560,8 +558,8 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::setConstraints( 	const double* const L_new, const double* const R_new,
-												const double* const A_new, const double* const lbA_new, const double* const ubA_new )
+	ReturnValue LCQProblem::setConstraints(const double* const L_new, const double* const R_new,
+                                         const double* const A_new, const double* const lbA_new, const double* const ubA_new)
 	{
 		if ( nV == 0 || nComp == 0 )
 			return LCQPOBJECT_NOT_SETUP;
@@ -626,16 +624,15 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::setConstraints(	const csc* const L_new, const csc* const R_new,
-											const csc* const A_new, const double* const lbA_new, const double* const ubA_new
-											)
+	ReturnValue LCQProblem::setConstraints(const csc* const L_new, const csc* const R_new,
+                                         const csc* const A_new, const double* const lbA_new, const double* const ubA_new)
 	{
 		// Create sparse matrices
 		L_sparse = Utilities::copyCSC(L_new);
 		R_sparse = Utilities::copyCSC(R_new);
 
 		// Get number of elements
-		int tmpA_nnx = L_sparse->p[nV] + R_sparse->p[nV];
+  	int tmpA_nnx = L_sparse->p[nV] + R_sparse->p[nV];
 
 		if (Utilities::isNotNullPtr(A_new)) {
 			tmpA_nnx += Utilities::isNotNullPtr(A_new->p) ? A_new->p[nV] : 0;
@@ -723,8 +720,8 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::setComplementarityBounds(const double* const lbL_new, const double* const ubL_new, const double* const lbR_new, const double* const ubR_new) {
-
+	ReturnValue LCQProblem::setComplementarityBounds(const double* const lbL_new, const double* const ubL_new, const double* const lbR_new, const double* const ubR_new)
+  {
 		if (Utilities::isNotNullPtr(lbL_new )) {
 			lbL = new double[nComp];
 		}
@@ -785,7 +782,7 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::setQ( const csc* const Q_new )
+	ReturnValue LCQProblem::setQ(const csc* const Q_new)
 	{
 		if (nV <= 0)
 			return LCQPOBJECT_NOT_SETUP;
@@ -796,7 +793,7 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::setQk( )
+	void LCQProblem::setQk()
 	{
 		if (sparseSolver) {
 			std::vector<double> Qk_data;
@@ -882,7 +879,7 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::initializeSolver( )
+	ReturnValue LCQProblem::initializeSolver()
 	{
 		ReturnValue ret = SUCCESSFUL_RETURN;
 		if (options.getQPSolver() == QPSolver::QPOASES_DENSE) {
@@ -1034,7 +1031,7 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::switchToSparseMode( )
+	ReturnValue LCQProblem::switchToSparseMode()
 	{
 
 		// Only perform this action if required
@@ -1068,7 +1065,7 @@ namespace LCQPow {
 	}
 
 
-	ReturnValue LCQProblem::switchToDenseMode( )
+	ReturnValue LCQProblem::switchToDenseMode()
 	{
 
 		// Only perform this action if required
@@ -1148,17 +1145,20 @@ namespace LCQPow {
 	}
 
 
-	bool LCQProblem::stationarityCheck( ) {
+	bool LCQProblem::stationarityCheck()
+  {
 		return Utilities::MaxAbs(statk, nV) < options.getStationarityTolerance();
 	}
 
 
-	bool LCQProblem::complementarityCheck( ) {
+	bool LCQProblem::complementarityCheck()
+  {
 		return getPhi() < options.getComplementarityTolerance();
 	}
 
 
-	double LCQProblem::getObj( ) {
+	double LCQProblem::getObj()
+  {
 		double lin = Utilities::DotProduct(g, xk, nV);
 
 		if (sparseSolver) {
@@ -1169,7 +1169,8 @@ namespace LCQPow {
 	}
 
 
-	double LCQProblem::getPhi( ) {
+	double LCQProblem::getPhi()
+  {
 		double phi_lin = 0;
 
 		// Linear term
@@ -1185,7 +1186,8 @@ namespace LCQPow {
 	}
 
 
-	double LCQProblem::getMerit( ) {
+	double LCQProblem::getMerit()
+  {
 		double lin = Utilities::DotProduct(g, xk, nV);
 
 		if (sparseSolver) {
@@ -1196,7 +1198,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updatePenalty( ) {
+	void LCQProblem::updatePenalty()
+  {
 		// Clear Leyffer history
 		if (options.getNDynamicPenalty() > 0)
 			complHistory.clear();
@@ -1213,8 +1216,8 @@ namespace LCQPow {
 		}
 	}
 
-
-	void LCQProblem::getOptimalStepLength( ) {
+	void LCQProblem::getOptimalStepLength()
+  {
 
 		double qk;
 
@@ -1237,13 +1240,15 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateStep( ) {
+	void LCQProblem::updateStep()
+  {
 		// xk = xk + alphak*pk
 		Utilities::WeightedVectorAdd(1, xk, alphak, pk, xk, nV);
 	}
 
 
-	void LCQProblem::updateStationarity( ) {
+	void LCQProblem::updateStationarity()
+  {
 		// stat = Qk*xk + g - A'*yk_A - yk_x
 		// 1) Objective contribution: Qk*xk + g
 		if (sparseSolver) {
@@ -1272,7 +1277,8 @@ namespace LCQPow {
 	}
 
 
-	bool LCQProblem::leyfferCheckPositive( ) {
+	bool LCQProblem::leyfferCheckPositive()
+  {
 
 		size_t n = (size_t)options.getNDynamicPenalty();
 
@@ -1313,7 +1319,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateQk( ) {
+	void LCQProblem::updateQk()
+  {
 		// Smart update in sparse case
 		if (sparseSolver) {
 			double factor = rho*(1 - 1.0/options.getPenaltyUpdateFactor());
@@ -1326,19 +1333,22 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::updateOuterIter( ) {
+	void LCQProblem::updateOuterIter()
+  {
 		outerIter++;
 		stats.updateIterOuter(1);
 	}
 
 
-	void LCQProblem::updateTotalIter( ) {
+	void LCQProblem::updateTotalIter()
+  {
 		totalIter++;
 		stats.updateIterTotal(1);
 	}
 
 
-	void LCQProblem::perturbGradient( ) {
+	void LCQProblem::perturbGradient()
+  {
 
 		int randNum;
 		for (int i = 0; i < nV; i++) {
@@ -1350,7 +1360,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::perturbStep( ) {
+	void LCQProblem::perturbStep()
+  {
 
 		int randNum;
 		for (int i = 0; i < nV; i++) {
@@ -1362,7 +1373,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::storeSteps( ) {
+	void LCQProblem::storeSteps()
+  {
 		stats.updateTrackingVectors(
 			xk,
 			innerIter,
@@ -1378,7 +1390,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::transformDuals( ) {
+	void LCQProblem::transformDuals()
+  {
 
 		double* tmp = new double[nComp];
 
@@ -1409,7 +1422,8 @@ namespace LCQPow {
 	}
 
 
-	void LCQProblem::determineStationarityType( ) {
+	void LCQProblem::determineStationarityType()
+  {
 
 		std::vector<int> weakComp = getWeakComplementarities( );
 
@@ -1453,7 +1467,7 @@ namespace LCQPow {
 	}
 
 
-	std::vector<int> LCQProblem::getWeakComplementarities( )
+	std::vector<int> LCQProblem::getWeakComplementarities()
 	{
 		double* Lx = new double[nComp];
 		double* Rx = new double[nComp];
@@ -1482,7 +1496,7 @@ namespace LCQPow {
 	}
 
 
-	AlgorithmStatus LCQProblem::getPrimalSolution( double* const xOpt ) const
+	AlgorithmStatus LCQProblem::getPrimalSolution(double* const xOpt) const
 	{
 		if (Utilities::isNotNullPtr(xOpt) && Utilities::isNotNullPtr(xk)) {
 			for (int i = 0; i < nV; i++)
@@ -1493,7 +1507,7 @@ namespace LCQPow {
 	}
 
 
-	AlgorithmStatus LCQProblem::getDualSolution( double* const yOpt ) const
+	AlgorithmStatus LCQProblem::getDualSolution(double* const yOpt) const
 	{
 		if (Utilities::isNotNullPtr(yOpt) && Utilities::isNotNullPtr(yk)) {
 			for (int i = 0; i < nDuals; i++)
@@ -1504,19 +1518,38 @@ namespace LCQPow {
 	}
 
 
-	int LCQProblem::getNumberOfPrimals( ) const
+	int LCQProblem::getNumberOfPrimals() const
 	{
 		return nV;
 	}
 
 
-	int LCQProblem::getNumberOfDuals( ) const
+	int LCQProblem::getNumberOfDuals() const
 	{
 		return nDuals;
 	}
 
+int LCQProblem::getNV() const
+{
+  return nV;
+}
 
-	void LCQProblem::getOutputStatistics( OutputStatistics& _stats) const
+int LCQProblem::getNC() const
+{
+  return nC;
+}
+int LCQProblem::getNComp() const
+{
+  return nComp;
+}
+
+Options LCQProblem::getOptions() const
+{
+  return options;
+}
+
+
+	void LCQProblem::getOutputStatistics(OutputStatistics& _stats) const
 	{
 		_stats = stats;
 	}
@@ -1525,7 +1558,7 @@ namespace LCQPow {
 	/*
 	 *	 p r i n t I t e r a t i o n
 	 */
-	void LCQProblem::printIteration( )
+	void LCQProblem::printIteration()
 	{
 		if (options.getPrintLevel() == PrintLevel::NONE)
 			return;
@@ -1638,7 +1671,7 @@ namespace LCQPow {
 
 
 	/// Clear allocated memory
-	void LCQProblem::clear( )
+	void LCQProblem::clear()
 	{
 		if (Utilities::isNotNullPtr(Q)) {
 			delete[] Q;
