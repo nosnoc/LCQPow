@@ -1,0 +1,22 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+BasedOnStyle: gnu
+IndentWidth: 2
+---
+Language: Cpp
+# Force pointers to the type for C++.
+DerivePointerAlignment: false
+PointerAlignment: Left
+SpaceBeforeSquareBrackets: false
+SpacesInParens: Never
+UseTab: Never
+SpacesInAngles: Never
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeParens: Never
+SpaceAfterCStyleCast: true
+SortIncludes: CaseInsensitive
+NamespaceIndentation: None
+FixNamespaceComments: true
+BreakBeforeBraces: Allman
+BreakAfterReturnType: Automatic
+ColumnLimit: 120
